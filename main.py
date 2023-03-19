@@ -1,8 +1,8 @@
 import os
 import json
 import datetime
-from data_manager import DataManager
-from user import User
+from src.data_manager import DataManager
+from src.user import User
 
 def print_next_meal(user: User):
     next_meal = user.get_next_meal()

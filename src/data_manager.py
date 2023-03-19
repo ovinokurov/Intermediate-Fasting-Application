@@ -2,7 +2,7 @@ import os
 import json
 
 class DataManager:
-    def __init__(self, filename="data.json"):
+    def __init__(self, filename="data/data.json"):
         self.filename = filename
 
     def load_data(self):
