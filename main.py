@@ -57,15 +57,15 @@ def main():
             user.update_meal(meal_index, new_time)
         elif choice == 3:
             current_weight = float(input("Please enter your current weight: "))
-            user.update_weight(current_weight)
+            user.model.update_weight(current_weight)
         elif choice == 4:
             new_hours = int(input("Enter your desired fasting hours: "))
-            user.change_fasting_hours(new_hours)
+            user.model.change_fasting_hours(new_hours)
         elif choice == 5:
             report = user.generate_report()
             print(report)
         elif choice == 6:
-            data[name] = user.to_dict()
+            data[name] = user.model.to_dict()
             data_manager.save_data(data)
             print("Data saved. Exiting the application.")
             break
