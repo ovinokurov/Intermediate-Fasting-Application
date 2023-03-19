@@ -22,21 +22,29 @@ class User:
             "weight_data": self.weight_data,
         }
 
-    def add_meal(self, meal_time, weight=None):
+    def add_meal(self):
+        now = datetime.datetime.now()
+        default_time = now.strftime("%m/%d/%Y %I:%M %p")
+        print(f"Current date and time: {default_time}")
+        
+        current_time = datetime.datetime.now().strftime('%m/%d/%Y %I:%M %p')
+        meal_time = input(f"Enter the date and time of your meal (mm/dd/yyyy hh:mm am/pm) [default: {current_time}]: ") or current_time
+        
+        if not meal_time:
+            meal_time = default_time
         meal = {"time": meal_time}
 
-        if weight is not None:
-            current_weight = weight
-        elif self.weight_data:
+        if self.weight_data:
             last_weight_entry = self.weight_data[-1]
             current_weight = last_weight_entry["weight"]
+            goal_weight = last_weight_entry["goal"]
         else:
-            raise ValueError("Weight must be provided for the first meal entry")
-
-        goal_weight = current_weight * 0.9
+            current_weight = float(input("Please enter your current weight: "))
+            goal_weight = current_weight * 0.9
 
         self.weight_data.append({"date": meal_time.split(" ")[0], "weight": current_weight, "goal": goal_weight})
         self.meals.append(meal)
+        print(f"Meal added: {meal_time}")
 
     def update_meal(self, meal_index, new_time):
         if 0 <= meal_index < len(self.meals):

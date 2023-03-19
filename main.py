@@ -4,7 +4,7 @@ import datetime
 from data_manager import DataManager
 from user import User
 
-def print_next_meal(user):
+def print_next_meal(user: User):
     next_meal = user.get_next_meal()
     if next_meal:
         time_left = user.get_time_left_before_next_meal()
@@ -14,6 +14,7 @@ def print_next_meal(user):
         print(f"Time left before next meal: {hours} hours {minutes} minutes")
     else:
         print("\nNo meals recorded yet.")
+
 
 def main():
     data_manager = DataManager()
@@ -39,19 +40,9 @@ def main():
         choice = int(input("Choose an option (1-6): "))
 
         if choice == 1:
-            meal_time = input("Enter the date and time of your meal (mm/dd/yyyy hh:mm am/pm): ")
-            if not user.weight_data:
-                weight = float(input("Please enter your current weight: "))
-            else:
-                weight = None
-            user.add_meal(meal_time, weight=weight)
+            user.add_meal()
         elif choice == 2:
-            print("Meal history:")
-            for i, meal in enumerate(user.meals, 1):
-                print(f"{i}. {meal['time']}")
-            meal_index = int(input("Enter the meal number you want to update: ")) - 1
-            new_time = input("Enter the new date and time for this meal (mm/dd/yyyy hh:mm am/pm): ")
-            user.update_meal(meal_index, new_time)
+            user.update_meal()
         elif choice == 3:
             current_weight = float(input("Please enter your current weight: "))
             user.update_weight(current_weight)
