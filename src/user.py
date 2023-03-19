@@ -32,14 +32,19 @@ class User:
         }
 
     def generate_report(self):
-        report = f"Name: {self.name}\n"
-        report += f"Fasting hours: {self.model.fasting_hours}\n"
-        report += "Meal history:\n"
-        for meal in self.model.meals:
-            report += f"{meal['time']}\n"
-        report += "Weight history:\n"
-        for weight_entry in self.model.weight_data:
-            report += f"{weight_entry['date']}: {weight_entry['weight']} lbs\n"
+        report = "\nFasting Report:\n"
+        report += "------------------------------------------------------------------\n"
+        report += "Date       | Meal Time           | Fasting Hours | Weight | Goal\n"
+        report += "------------------------------------------------------------------\n"
+        all_meal_dates = sorted([meal["time"] for meal in self.model.meals])
+        all_weight_dates = {entry["date"]: (entry["weight"], entry["goal"]) for entry in self.model.weight_data}
+
+        for meal_date in all_meal_dates:
+            weight, goal = all_weight_dates.get(meal_date.split(" ")[0], ("N/A", "N/A"))
+            report += f"{meal_date.split(' ')[0]} | {meal_date} | {self.model.fasting_hours}            | {weight}  | {goal}\n"
+
+        report += "------------------------------------------------------------------\n"
+
         return report
 
     @classmethod
