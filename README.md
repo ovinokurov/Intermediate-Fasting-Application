@@ -3,15 +3,6 @@
 This application helps users to keep track of their intermediate fasting by managing their meals, fasting hours, and weight. Users can add meals, update meals, update their weight, change fasting hours, and generate reports.
 
 
-## Files Structure
-
-intermediate_fasting/
-│
-├── main.py # Main application entry point
-├── data_manager.py # DataManager class for handling data I/O
-└── user.py # User class for user-related operations
-
-
 ## How to Run
 
 1. Ensure Python 3 is installed on your system.
