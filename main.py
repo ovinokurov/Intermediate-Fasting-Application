@@ -4,14 +4,17 @@ import datetime
 from src.data_manager import DataManager
 from src.user import User
 
-def print_next_meal(user: User):
+def print_next_meal(user):
     next_meal = user.get_next_meal()
+    time_left = user.get_time_left_before_next_meal()
+    hours, minutes = divmod(time_left.seconds, 3600)
+    minutes = minutes // 60
     if next_meal:
-        time_left = user.get_time_left_before_next_meal()
-        hours, minutes = divmod(time_left.seconds, 3600)
-        minutes = minutes // 60
-        print(f"\nNext meal: {next_meal.strftime('%m/%d/%Y %I:%M %p')}")
-        print(f"Time left before next meal: {hours} hours {minutes} minutes")
+        if time_left.total_seconds() <= 0:
+            print(f"\nFasting goal reached! You can start eating now.")
+        else:
+            print(f"\nNext meal: {next_meal.strftime('%m/%d/%Y %I:%M %p')}")
+            print(f"Time left before next meal: {hours} hours {minutes} minutes")
     else:
         print("\nNo meals recorded yet.")
 

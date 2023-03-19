@@ -28,7 +28,7 @@ class User:
         print(f"Current date and time: {default_time}")
         
         current_time = datetime.datetime.now().strftime('%m/%d/%Y %I:%M %p')
-        meal_time = input(f"Enter the date and time of your meal (mm/dd/yyyy hh:mm am/pm) [default: {current_time}]: ") or current_time
+        meal_time = input(f"Enter the date and time of your last meal before fasting (mm/dd/yyyy hh:mm am/pm) [default: {current_time}]: ") or current_time
         
         if not meal_time:
             meal_time = default_time
