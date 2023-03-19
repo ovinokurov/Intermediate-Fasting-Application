@@ -2,6 +2,35 @@
 
 This application helps users to keep track of their intermediate fasting by managing their meals, fasting hours, and weight. Users can add meals, update meals, update their weight, change fasting hours, and generate reports.
 
+## Application Diagram
+<table>
+  <tr>
+    <td colspan="3">
+      <strong>main.py</strong>
+      <br>
+      Main Application
+      <br>
+      Loop & User Interface
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <strong>data_manager.py</strong>
+      <br>
+      DataManager Class
+      <br>
+      (Load & Save Data)
+    </td>
+    <td></td>
+    <td>
+      <strong>user.py</strong>
+      <br>
+      User Class
+      <br>
+      (User-related Operations)
+    </td>
+  </tr>
+</table>
 
 ## How to Run
 
