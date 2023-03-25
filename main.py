@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 # Define constants and global variables
 USER_DATA_FILE = "data/user_data.json"
 FASTING_HOURS_DEFAULT = 16
-MEAL_INTERVAL_DEFAULT = timedelta(hours=FASTING_HOURS_DEFAULT)
+CUPS_OF_WATER_GOAL_DEFAULT = 11
 
 
 def load_user_data(username):
@@ -22,7 +22,8 @@ def load_user_data(username):
         "weight": None,
         "last_meal": None,
         "meal_times": [],
-        "fasting_hours": FASTING_HOURS_DEFAULT
+        "fasting_hours": FASTING_HOURS_DEFAULT,
+        "cups_of_water_goal": 11  
     })
 
 
@@ -55,6 +56,7 @@ def calculate_next_meal_time(last_meal_time, fasting_hours):
     # Calculate the time of the next meal
     next_meal_time = last_meal_time + timedelta(hours=fasting_hours)
     return next_meal_time
+
 
 def add_meal(username, data):
     # Ask user for meal type and time
@@ -100,6 +102,31 @@ def update_meal(username, data):
     save_user_data(username, data)
     print("Meal updated successfully!")
 
+
+def delete_meal(username, data):
+    meals = data["meal_times"]
+    if not meals:
+        print("No meals found to delete.")
+        return
+
+    print("Select a meal to delete:")
+    for i, meal in enumerate(meals):
+        meal_time = datetime.fromisoformat(meal["time"])
+        print(f"{i + 1}. {meal['type']} at {meal_time.strftime('%m/%d/%Y %I:%M %p')}")
+    
+    selection = int(input("Please select a meal (or enter 0 to cancel): ")) - 1
+    if selection < -1 or selection >= len(meals):
+        print("Invalid selection. Please try again.")
+        return
+    elif selection == -1:
+        print("Delete meal cancelled.")
+        return
+
+    del data["meal_times"][selection]
+    save_user_data(username, data)
+    print("Meal deleted successfully!")
+
+
 def generate_report(username):
     data = load_user_data(username)
     print("")
@@ -109,9 +136,9 @@ def generate_report(username):
 
     # Prompt user for time period
     print("Report for what period?")
-    print("1. This week")
-    print("2. This month")
-    print("3. Today")
+    print("1. Today")
+    print("2. This week")
+    print("3. This month")
     print("4. All time")
     period_choice = input("Enter your choice (1, 2, 3, or 4): ")
     period_choice = int(period_choice)
@@ -119,16 +146,20 @@ def generate_report(username):
     # Calculate start and end dates for chosen period
     today = datetime.now().date()
     if period_choice == 1:
+        #Today
+        start_date = today
+        end_date = today
+    elif period_choice == 2:
+        #This week
         start_date = today - timedelta(days=today.weekday())
         end_date = start_date + timedelta(days=6)
-    elif period_choice == 2:
+    elif period_choice == 3:
+        #This month
         start_date = today.replace(day=1)
         next_month = today.replace(day=28) + timedelta(days=4)
         end_date = next_month - timedelta(days=next_month.day)
-    elif period_choice == 3:
-        start_date = today
-        end_date = today
     else:
+        #All time
         start_date = datetime.min.date()
         end_date = datetime.max.date()
 
@@ -165,12 +196,14 @@ def change_fasting_hours(username, data):
     save_user_data(username, data)
     print("Fasting hours updated successfully!")
 
+
 def update_weight(username, data):
     # Ask user for their new weight
     weight = float(input("Enter your weight in pounds: "))
     data["weight"] = weight
     save_user_data(username, data)
     print("Weight updated successfully!")
+
 
 def display_next_meal_and_fasting_goal(data):
     fasting_hours = data["fasting_hours"]
@@ -185,6 +218,7 @@ def display_next_meal_and_fasting_goal(data):
         print(f"Next meal at: {next_meal.strftime('%I:%M %p')}")
         print(f"Remaining fasting time: {str(remaining_time).split('.')[0]}")
 
+
 def calculate_next_meal_time(last_meal_time, fasting_hours):
     # Check if last_meal_time is a string, and convert to string if not
     if not isinstance(last_meal_time, str):
@@ -196,6 +230,36 @@ def calculate_next_meal_time(last_meal_time, fasting_hours):
     # Calculate the time of the next meal
     next_meal_time = datetime.fromisoformat(last_meal_time) + timedelta(hours=fasting_hours)
     return next_meal_time
+
+
+def update_cups_of_water_goal(username, data):
+    # Ask user for their new cups of water goal
+    new_goal = int(input("Enter your new daily cups of water goal: "))
+    data["cups_of_water_goal"] = new_goal
+    save_user_data(username, data)
+    print("Daily cups of water goal updated successfully!")
+
+
+def count_cups_of_water_today(username, data):
+    today_date = datetime.now().date()
+    cups_of_water_today = 0
+    cups_of_water_goal = data.get("cups_of_water_goal", CUPS_OF_WATER_GOAL_DEFAULT)
+
+    for meal in data["meal_times"]:
+        meal_time = meal["time"]
+        if not isinstance(meal_time, datetime):
+            meal_time = datetime.fromisoformat(meal_time)
+        meal_date = meal_time.date()
+
+        if meal["type"] == "cup of water" and meal_date == today_date:
+            cups_of_water_today += 1
+
+    print(f"Today, you have consumed {cups_of_water_today} cups of water.")
+    if cups_of_water_today >= cups_of_water_goal:
+        print("Congratulations! You have reached your daily water intake goal.")
+    else:
+        remaining_cups = cups_of_water_goal - cups_of_water_today
+        print(f"You need to drink {remaining_cups} more cups of water to reach your daily goal.")
 
 
 # Define main function
@@ -214,25 +278,29 @@ def main():
         print("Main Menu:")
         print("1. Add meal")
         print("2. Update meal")
-        print("3. Update weight")
-        print("4. Change fasting hours")
-        print("5. Generate report")
-        #print("6. Display next meal and fasting goal")
-        print("6. Exit")
+        print("3. Delete Meal")
+        print("4. Update weight")
+        print("5. Change fasting hours")
+        print("6. Update cups of water goal")
+        print("7. Generate report")
+        print("8. Exit")
         selection = int(input("Please select an option: "))
         if selection == 1:
             add_meal(username, data)
         elif selection == 2:
             update_meal(username, data)
         elif selection == 3:
-            update_weight(username, data)
-        elif selection == 4:
-            change_fasting_hours(username, data)
+            delete_meal(username, data)
+        elif selection == 4:            
+            update_weight(username, data)            
         elif selection == 5:
-            generate_report(username)
-        #elif selection == 6:
-        #    display_next_meal_and_fasting_goal(data)
+            change_fasting_hours(username, data)
         elif selection == 6:
+            update_cups_of_water_goal(username, data)
+        elif selection == 7:
+            generate_report(username)
+            count_cups_of_water_today(username, data)            
+        elif selection == 8:
             break
         else:
             print("Invalid selection. Please try again.")
