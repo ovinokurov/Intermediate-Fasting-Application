@@ -44,7 +44,10 @@ def save_user_data(username, data):
 def json_serializable(obj):
     """Converts datetime objects to ISO format for JSON serialization."""
     if isinstance(obj, datetime):
-        return obj.isoformat()
+        if hasattr(obj, "isoformat"):
+            return obj.isoformat()
+        else:
+            return obj.strftime("%Y-%m-%dT%H:%M:%S.%f")
     raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
 
 
@@ -183,11 +186,15 @@ def display_next_meal_and_fasting_goal(data):
         print(f"Remaining fasting time: {str(remaining_time).split('.')[0]}")
 
 def calculate_next_meal_time(last_meal_time, fasting_hours):
-    last_meal_time = datetime.fromisoformat(last_meal_time)
+    # Check if last_meal_time is a string, and convert to string if not
+    if not isinstance(last_meal_time, str):
+        last_meal_time = last_meal_time.isoformat()
+
     # Convert fasting_hours to an integer
     fasting_hours = int(fasting_hours)
+
     # Calculate the time of the next meal
-    next_meal_time = last_meal_time + timedelta(hours=fasting_hours)
+    next_meal_time = datetime.fromisoformat(last_meal_time) + timedelta(hours=fasting_hours)
     return next_meal_time
 
 
